@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Comprehension AI (GCAI) — Madrasah Alsagoff Al-Arabiah</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Naskh+Arabic:wght@400;600&family=Fraunces:opsz,wght@9..144,600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<style>
+:root{
+  --green:#0d4f3c; --green-2:#14684f; --green-soft:#e6f2ed; --gold:#c8962e; --gold-soft:#fbf3e2;
+  --ink:#1c2420; --muted:#5d6b64; --line:#dde5e1; --bg:#f6f8f7; --card:#fff;
+  --red:#b3412f; --red-soft:#fbeae6; --blue:#2a5d8f; --blue-soft:#e8f0f8;
+  --radius:12px; --shadow:0 1px 2px rgba(0,0,0,.04),0 4px 16px rgba(13,79,60,.06);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg);font-size:15px;line-height:1.55}
+[dir=rtl],.rtl{font-family:"Noto Naskh Arabic",Inter,sans-serif;font-size:1.08em;line-height:1.9}
+h1,h2,h3,h4{margin:0 0 .5rem;line-height:1.25}
+h2{font-size:1.25rem} h3{font-size:1.05rem} h4{font-size:.95rem}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+.app{min-height:100vh;display:flex;flex-direction:column}
+
+/* Header */
+header{background:var(--green);color:#fff;padding:0 24px;display:flex;align-items:center;gap:24px;flex-wrap:wrap;position:sticky;top:0;z-index:20}
+.brand{display:flex;align-items:center;gap:12px;padding:12px 0}
+.logo{width:40px;height:40px;border-radius:10px;background:var(--gold);display:grid;place-items:center;font-family:Fraunces,serif;font-weight:600;color:var(--green);font-size:18px}
+.brand h1{font-family:Fraunces,serif;font-size:1.15rem;margin:0;letter-spacing:.2px}
+.brand small{display:block;opacity:.75;font-size:.75rem}
+nav{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+nav button{background:transparent;border:0;color:#d5e8e0;padding:18px 14px;border-bottom:3px solid transparent;font-weight:500}
+nav button:hover{color:#fff}
+nav button.active{color:#fff;border-bottom-color:var(--gold)}
+main{flex:1;padding:24px;max-width:1400px;width:100%;margin:0 auto}
+.tab{display:none}.tab.active{display:block}
+
+/* Cards & layout */
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.grid-create{display:grid;grid-template-columns:420px 1fr;gap:20px;align-items:start}
+@media(max-width:1000px){.grid-create{grid-template-columns:1fr}}
+.stack>*+*{margin-top:14px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.row>*{flex:1;min-width:140px}
+label.lbl{display:block;font-size:.8rem;font-weight:600;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:.4px}
+input[type=text],input[type=password],input[type=number],select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);border-radius:8px;background:#fff}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--green-2);outline-offset:-1px;border-color:transparent}
+textarea{resize:vertical}
+#passageInput{min-height:220px}
+.btn{border:1px solid var(--line);background:#fff;padding:9px 14px;border-radius:8px;font-weight:500;display:inline-flex;align-items:center;gap:6px;justify-content:center}
+.btn:hover{background:var(--bg)}
+.btn.primary{background:var(--green);border-color:var(--green);color:#fff}
+.btn.primary:hover{background:var(--green-2)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#fff}
+.btn.danger{color:var(--red);border-color:#e9c4bc}
+.btn.sm{padding:5px 10px;font-size:.85rem}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.btn.block{width:100%}
+
+/* Drop zone */
+.drop{border:2px dashed #b9cfc6;border-radius:10px;padding:20px;text-align:center;background:var(--green-soft);transition:.15s;cursor:pointer}
+.drop.over{background:#d4eae1;border-color:var(--green)}
+.drop strong{color:var(--green)}
+.drop .fmt{display:flex;gap:6px;justify-content:center;margin-top:8px}
+.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.75rem;font-weight:600;background:#fff;border:1px solid var(--line);color:var(--muted)}
+.fileinfo{font-size:.85rem;padding:8px 10px;border-radius:8px;background:var(--gold-soft);border:1px solid #efdcb2;display:none}
+.checks{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.checks label{display:flex;gap:7px;align-items:center;font-size:.9rem;padding:6px 8px;border:1px solid var(--line);border-radius:8px;cursor:pointer}
+.checks label:has(input:checked){background:var(--green-soft);border-color:#b9d8cb}
+.hint{font-size:.8rem;color:var(--muted)}
+details summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--green)}
+
+/* Output */
+.empty{text-align:center;padding:60px 20px;color:var(--muted)}
+.empty .big{font-family:Fraunces,serif;font-size:1.5rem;color:var(--green);margin-bottom:8px}
+.subtabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:-4px 0 16px;flex-wrap:wrap}
+.subtabs button{border:0;background:none;padding:10px 12px;color:var(--muted);font-weight:500;border-bottom:2px solid transparent}
+.subtabs button.active{color:var(--green);border-bottom-color:var(--green)}
+.sub{display:none}.sub.active{display:block}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+.stat{background:var(--bg);border-radius:10px;padding:12px 14px}
+.stat .k{font-size:.75rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);font-weight:600}
+.stat .v{font-size:1.15rem;font-weight:600;margin-top:2px}
+.q{border:1px solid var(--line);border-radius:10px;padding:16px;margin-bottom:12px;background:#fff}
+.q-head{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.qnum{width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center;font-weight:600;font-size:.85rem;flex:none}
+.badge{font-size:.72rem;font-weight:600;padding:3px 9px;border-radius:999px;text-transform:uppercase;letter-spacing:.3px}
+.t-literal{background:#e3f1ea;color:#1d6b4b}
+.t-inferential{background:#e9e6f8;color:#4a3d9a}
+.t-vocabulary{background:#fbeedd;color:#9a5d12}
+.t-summary{background:#e3eef8;color:#2a5d8f}
+.t-purpose_tone{background:#f8e5ec;color:#94304f}
+.marks{margin-left:auto;font-weight:600;color:var(--muted);font-size:.85rem}
+.qtext{font-weight:600;font-size:1rem;margin-bottom:10px}
+[contenteditable=true]{border-radius:4px;padding:1px 3px;margin:-1px -3px}
+[contenteditable=true]:hover{background:#fffbea;outline:1px dashed #e4d08a}
+[contenteditable=true]:focus{background:#fffbea;outline:2px solid var(--gold)}
+.block{border-left:3px solid var(--line);padding:6px 12px;margin:8px 0;font-size:.92rem}
+.block .lab{font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);display:block;margin-bottom:2px}
+.block.ans{border-color:var(--green);background:var(--green-soft)}
+.block.ev{border-color:var(--gold);background:var(--gold-soft);font-style:italic}
+.block.str{border-color:var(--blue);background:var(--blue-soft)}
+.block.err{border-color:var(--red);background:var(--red-soft)}
+.block ol,.block ul{margin:4px 0;padding-inline-start:20px}
+.kw{display:inline-block;background:#fff3c4;border:1px solid #ecd58a;border-radius:6px;padding:1px 7px;margin:2px 3px 2px 0;font-size:.82rem}
+.passage{font-size:1.02rem;line-height:1.85;background:#fffdf8;border:1px solid #efe6d2;border-radius:10px;padding:20px 24px;max-height:560px;overflow:auto}
+.passage p{margin:0 0 .9em}
+.passage mark{background:#fde79a;padding:0 2px;border-radius:3px}
+.passage mark.ev{background:#cfe8dc}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:start;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.75rem;text-transform:uppercase;letter-spacing:.4px;color:var(--muted);background:var(--bg)}
+.legend{display:flex;gap:14px;font-size:.8rem;color:var(--muted);margin-bottom:8px;flex-wrap:wrap}
+.legend span::before{content:"";display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-2px;background:#fde79a}
+.legend span.e::before{background:#cfe8dc}
+
+/* Practice */
+.grid-practice{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:start}
+@media(max-width:1000px){.grid-practice{grid-template-columns:1fr}}
+.sticky{position:sticky;top:84px}
+.pq textarea{min-height:80px;margin-top:6px}
+.pf-note{background:var(--gold-soft);border:1px solid #efdcb2;border-radius:10px;padding:10px 14px;font-size:.88rem}
+.result{margin-top:10px;border-radius:8px;padding:10px 12px;font-size:.9rem}
+.result.good{background:var(--green-soft);border:1px solid #b9d8cb}
+.result.mid{background:var(--gold-soft);border:1px solid #efdcb2}
+.result.low{background:var(--red-soft);border:1px solid #edc6bd}
+.scorebig{font-family:Fraunces,serif;font-size:2.2rem;color:var(--green)}
+
+/* Analytics bars */
+.bars .bar{display:grid;grid-template-columns:180px 1fr 52px;gap:10px;align-items:center;margin:8px 0;font-size:.9rem}
+.bars .track{height:14px;background:var(--bg);border-radius:7px;overflow:hidden;border:1px solid var(--line)}
+.bars .fill{height:100%;border-radius:7px}
+.lib-item{display:flex;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:10px;margin-bottom:8px;background:#fff;flex-wrap:wrap}
+.lib-item .meta{flex:1;min-width:200px}
+.lib-item .meta small{color:var(--muted)}
+.pkg{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.pkg .card h3{display:flex;align-items:center;gap:8px}
+
+/* Overlay */
+.overlay{position:fixed;inset:0;background:rgba(13,40,32,.45);display:none;place-items:center;z-index:100}
+.overlay.show{display:grid}
+.loader{background:#fff;border-radius:14px;padding:28px 34px;text-align:center;max-width:360px;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.spin{width:42px;height:42px;border:4px solid var(--green-soft);border-top-color:var(--green);border-radius:50%;animation:s 0.9s linear infinite;margin:0 auto 14px}
+@keyframes s{to{transform:rotate(360deg)}}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;transition:.25s;z-index:120;font-size:.9rem;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.banner{background:var(--blue-soft);border:1px solid #c6d8ea;color:#21486e;padding:10px 14px;border-radius:10px;font-size:.88rem;margin-bottom:16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.banner .btn{margin-left:auto}
+#printArea{display:none}
+@media print{
+  .app,.overlay,.toast{display:none!important}
+  #printArea{display:block;font-family:Inter,Arial,sans-serif;color:#000;font-size:12pt}
+  #printArea .q{break-inside:avoid;border:none;padding:0;margin-bottom:14px}
+  #printArea .lines{border-bottom:1px solid #999;height:26px}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<header>
+  <div class="brand">
+    <div class="logo">G</div>
+    <div><h1>Global Comprehension AI</h1><small>Madrasah Alsagoff Al-Arabiah · SEO Project</small></div>
+  </div>
+  <nav id="mainNav">
+    <button data-tab="create" class="active">Create</button>
+    <button data-tab="library">Library</button>
+    <button data-tab="practice">Student Practice</button>
+    <button data-tab="analytics">Analytics</button>
+    <button data-tab="package">Lesson Package</button>
+    <button data-tab="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+<!-- ================= CREATE ================= -->
+<section class="tab active" id="tab-create">
+  <div class="banner" id="keyBanner" style="display:none">
+    <span id="bannerText">To generate questions from your own texts, add an Anthropic API key in <b>Settings</b>. You can explore the app first with the sample passage.</span>
+    <button class="btn sm" id="bannerDemo">Load sample</button>
+    <button class="btn sm primary" id="bannerSettings">Open Settings</button>
+  </div>
+  <div class="grid-create">
+    <!-- Input panel -->
+    <div class="card stack">
+      <h2>1 · Upload or paste a text</h2>
+      <div class="drop" id="drop">
+        <div><strong>Drop a file here</strong> or click to browse</div>
+        <div class="hint">Any language · text is extracted in your browser</div>
+        <div class="fmt"><span class="chip">PDF</span><span class="chip">DOCX</span><span class="chip">DOC</span><span class="chip">TXT</span><span class="chip">RTF</span></div>
+        <input type="file" id="fileInput" accept=".pdf,.doc,.docx,.txt,.rtf,.md,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden>
+      </div>
+      <div class="fileinfo" id="fileInfo"></div>
+      <div>
+        <label class="lbl" for="titleInput">Title</label>
+        <input type="text" id="titleInput" oninput="delete this.dataset.auto" placeholder="e.g. The Water Keepers of Kampong Lalang">
+      </div>
+      <div>
+        <label class="lbl" for="passageInput">Passage text</label>
+        <textarea id="passageInput" dir="auto" placeholder="Paste a passage in English, Arabic, Malay or any other language…"></textarea>
+        <div class="hint" id="wordCount">0 words</div>
+      </div>
+
+      <h2 style="margin-top:22px">2 · Assessment settings</h2>
+      <div class="row">
+        <div><label class="lbl">Level</label>
+          <select id="level">
+            <option>Primary 1–3</option><option>Primary 4–6</option>
+            <option selected>Secondary 1–2</option><option>Secondary 3–5</option>
+            <option>Diploma / Pre-University</option>
+          </select></div>
+        <div><label class="lbl">Exam format</label>
+          <select id="format">
+            <option>General comprehension</option>
+            <option>PSLE-style (Primary)</option>
+            <option selected>GCE O-Level style</option>
+            <option>GCE N-Level style</option>
+            <option>Madrasah Arabic exam (فهم المقروء)</option>
+            <option>Malay Language exam (Kefahaman)</option>
+            <option>Diploma / Pre-U style</option>
+            <option>Cambridge / IB style</option>
+          </select></div>
+      </div>
+      <div>
+        <label class="lbl">Question types</label>
+        <div class="checks" id="typeChecks">
+          <label><input type="checkbox" value="literal" checked> Literal</label>
+          <label><input type="checkbox" value="inferential" checked> Inferential</label>
+          <label><input type="checkbox" value="vocabulary" checked> Vocabulary</label>
+          <label><input type="checkbox" value="summary" checked> Summary</label>
+          <label style="grid-column:span 2"><input type="checkbox" value="purpose_tone" checked> Author’s purpose &amp; tone</label>
+        </div>
+      </div>
+      <div class="row">
+        <div><label class="lbl">No. of questions</label><input type="number" id="numQ" min="3" max="20" value="8"></div>
+        <div><label class="lbl">Total marks</label><input type="number" id="totalMarks" min="5" max="100" value="25"></div>
+      </div>
+      <div class="row">
+        <div><label class="lbl">Questions &amp; answers in</label>
+          <select id="qLang"><option>Same as passage</option><option>English</option><option>Malay</option><option>Arabic</option></select></div>
+        <div><label class="lbl">Teacher guidance in</label>
+          <select id="gLang"><option>English</option><option>Same as passage</option><option>Malay</option><option>Arabic</option></select></div>
+      </div>
+      <details>
+        <summary>Additional instructions (optional)</summary>
+        <textarea id="notes" rows="3" style="margin-top:8px" placeholder="e.g. Focus on inference; include one question on a figurative expression; my class has many EL2 learners."></textarea>
+      </details>
+      <button class="btn primary block" id="generateBtn" style="padding:12px">✦ Generate comprehension package</button>
+      <button class="btn block" id="demoBtn">Load sample passage (no API key needed)</button>
+    </div>
+
+    <!-- Output panel -->
+    <div class="card" id="output">
+      <div class="empty">
+        <div class="big">Your comprehension package will appear here</div>
+        <div>Text analysis · exam-style questions · model answers · marking scheme · strategies · lesson plan</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= LIBRARY ================= -->
+<section class="tab" id="tab-library">
+  <div class="card">
+    <div class="row" style="margin-bottom:12px"><h2 style="flex:3">Saved comprehension sets</h2>
+      <div style="flex:1;text-align:right"><button class="btn sm" id="importBtn">Import set (.json)</button><input type="file" id="importInput" accept=".json" hidden></div></div>
+    <div id="libraryList"></div>
+  </div>
+</section>
+
+<!-- ================= PRACTICE ================= -->
+<section class="tab" id="tab-practice">
+  <div class="card" style="margin-bottom:20px">
+    <div class="row">
+      <div style="flex:2"><label class="lbl">Comprehension set</label><select id="pSet"></select></div>
+      <div><label class="lbl">Student name</label><input type="text" id="pName" placeholder="Full name"></div>
+      <div><label class="lbl">Class</label><input type="text" id="pClass" placeholder="e.g. 2A"></div>
+      <div style="flex:0 0 auto;align-self:end"><button class="btn primary" id="pStart">Start practice</button></div>
+    </div>
+  </div>
+  <div id="practiceArea"></div>
+</section>
+
+<!-- ================= ANALYTICS ================= -->
+<section class="tab" id="tab-analytics">
+  <div class="card" style="margin-bottom:20px">
+    <div class="row">
+      <div style="flex:2"><label class="lbl">Filter by set</label><select id="aSet"></select></div>
+      <div><label class="lbl">Filter by class</label><select id="aClass"></select></div>
+      <div style="flex:0 0 auto;align-self:end" class="row">
+        <button class="btn" id="exportCsv">Export CSV</button>
+        <button class="btn danger" id="clearAttempts">Clear data</button>
+      </div>
+    </div>
+  </div>
+  <div id="analyticsArea"></div>
+</section>
+
+<!-- ================= PACKAGE ================= -->
+<section class="tab" id="tab-package">
+  <div id="packageArea"></div>
+</section>
+
+<!-- ================= SETTINGS ================= -->
+<section class="tab" id="tab-settings">
+  <div class="card stack" style="max-width:720px">
+    <h2>AI connection</h2>
+    <div id="hostedNote" class="pf-note" style="display:none">✓ This page is running inside Claude, so it uses <b>your Claude account</b>. No API key is needed. The first time you generate or mark, Claude will ask you to allow it.</div>
+    <p class="hint" style="margin:0">GCAI uses Claude (Anthropic) to analyse texts, write questions and mark answers. The key is stored only in this browser. For school-wide rollout, place the key behind a school server instead of on student devices.</p>
+    <div><label class="lbl" for="apiKey">Anthropic API key</label><input type="password" id="apiKey" placeholder="sk-ant-…" autocomplete="off"></div>
+    <div><label class="lbl" for="model">Model</label>
+      <input type="text" id="model" list="models" value="claude-sonnet-5-5">
+      <datalist id="models"><option value="claude-sonnet-5-5"><option value="claude-opus-5-5"><option value="claude-haiku-5-5"></datalist>
+      <div class="hint">Sonnet: balanced (recommended) · Opus: highest quality · Haiku: fastest &amp; cheapest</div></div>
+    <div class="row" style="justify-content:flex-start">
+      <button class="btn primary" id="saveKey" style="flex:0 0 auto">Save</button>
+      <button class="btn" id="testKey" style="flex:0 0 auto">Test connection</button>
+      <span id="keyStatus" class="hint"></span>
+    </div>
+    <hr style="border:0;border-top:1px solid var(--line);margin:22px 0">
+    <h2>Data on this device</h2>
+    <p class="hint" style="margin:0">Saved sets and student attempts are kept in this browser's local storage. Export them regularly to the project Google Drive (folder <i>05 Pilot Testing</i>).</p>
+    <div class="row" style="justify-content:flex-start">
+      <button class="btn" id="backupBtn" style="flex:0 0 auto">Download full backup</button>
+      <button class="btn danger" id="resetAll" style="flex:0 0 auto">Erase all local data</button>
+    </div>
+  </div>
+</section>
+</main>
+</div>
+
+<div class="overlay" id="overlay"><div class="loader"><div class="spin"></div><div id="loaderMsg" style="font-weight:600">Working…</div><div class="hint" id="loaderSub" style="margin-top:6px"></div></div></div>
+<div class="overlay" id="dlg"><div class="loader" style="text-align:left;max-width:440px"><div id="dlgMsg" style="white-space:pre-wrap;margin-bottom:16px"></div><div class="row" style="justify-content:flex-end"><button class="btn" id="dlgNo" style="flex:0 0 auto">Cancel</button><button class="btn primary" id="dlgYes" style="flex:0 0 auto">OK</button></div></div></div>
+<div class="toast" id="toast"></div>
+<div id="printArea"></div>
+
+<script>
+/* =========================================================
+   GCAI — Global Comprehension AI
+   ========================================================= */
+const $ = s => document.querySelector(s);
+const $$ = s => [...document.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36);
+const TYPE_LABEL = {literal:'Literal', inferential:'Inferential', vocabulary:'Vocabulary', summary:'Summary', purpose_tone:'Purpose & Tone'};
+const TYPE_COLOR = {literal:'#2f8a63', inferential:'#5b4cc0', vocabulary:'#c7801f', summary:'#2a5d8f', purpose_tone:'#b4436a'};
+const RTL_LANGS = /arab|urdu|jawi|persian|farsi|hebrew|pashto/i;
+
+/* ---------- storage (with in-memory fallback) ---------- */
+const mem = {};
+const store = {
+  get(k, d){ try{ const v = localStorage.getItem('gcai_'+k); return v ? JSON.parse(v) : (k in mem ? mem[k] : d); } catch(e){ return k in mem ? mem[k] : d; } },
+  set(k, v){ mem[k] = v; try{ localStorage.setItem('gcai_'+k, JSON.stringify(v)); } catch(e){} }
+};
+
+let current = null;          // currently generated / opened set
+let scannedPdf = null;       // base64 of an image-only PDF
+let scannedBuf = null;       // ArrayBuffer copy of an image-only PDF (for page images)
+let needsClean = false;      // text came from PDF/DOC extraction and may be jumbled
+let practice = null;         // active practice session
+
+/* ---------- UI helpers ---------- */
+function toast(msg, ms=2600){ const t=$('#toast'); t.textContent=msg; t.classList.add('show'); clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'), ms); }
+function busy(on, msg='Working…', sub=''){ $('#overlay').classList.toggle('show', on); $('#loaderMsg').textContent=msg; $('#loaderSub').textContent=sub; }
+function showTab(name){
+  $$('#mainNav button').forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  $$('.tab').forEach(t=>t.classList.toggle('active', t.id==='tab-'+name));
+  if(name==='library') renderLibrary();
+  if(name==='practice') refreshPracticeSets();
+  if(name==='analytics') renderAnalytics();
+  if(name==='package') renderPackage();
+  window.scrollTo(0,0);
+}
+$$('#mainNav button').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));
+function isRtl(set){ return set && (set.direction==='rtl' || RTL_LANGS.test(set.language||'')); }
+function download(name, content, type='application/json'){
+  const blob = content instanceof Blob ? content : new Blob([content], {type});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); setTimeout(()=>{URL.revokeObjectURL(a.href); a.remove();}, 500);
+}
+function uiDialog(msg, confirmMode){
+  return new Promise(res=>{ $('#dlgMsg').textContent = msg; $('#dlgNo').style.display = confirmMode ? '' : 'none';
+    $('#dlg').classList.add('show');
+    const done = v => { $('#dlg').classList.remove('show'); $('#dlgYes').onclick = $('#dlgNo').onclick = null; res(v); };
+    $('#dlgYes').onclick = () => done(true); $('#dlgNo').onclick = () => done(false); });
+}
+const uiAlert = m => uiDialog(m, false), uiConfirm = m => uiDialog(m, true);
+
+/* Hosted mode: inside a Claude artifact viewer, use the viewer's Claude account and the platform's download prompt */
+const HOSTED = !!(window.claude && typeof window.claude.use === 'function');
+let SAMPLE_FN = null, DOWNLOADS = null, IMG_LIMIT = 0;
+if (HOSTED){
+  claude.use('sample').then(async fn => { SAMPLE_FN = fn; if (fn){ try{ const l = await fn.limits(); IMG_LIMIT = (l.images && l.images.maxCount) || 0; }catch(e){} } refreshKeyUI(); }).catch(()=>{});
+  claude.use('downloads').then(d => { DOWNLOADS = d; }).catch(()=>{});
+}
+async function saveFile(name, content, type='application/json'){
+  if (DOWNLOADS){
+    try{ await DOWNLOADS.save({filename:name, data: content}); toast('Saved ✓'); }
+    catch(e){ if (e && e.code !== 'declined') uiAlert('Could not save the file here ('+(e.code||'error')+').'); }
+    return;
+  }
+  download(name, content, type);
+}
+const safeName = s => (s||'comprehension').replace(/[^\p{L}\p{N}]+/gu,'_').slice(0,60);
+
+/* =========================================================
+   FILE INPUT: PDF / DOCX / DOC / TXT / RTF
+   ========================================================= */
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const drop = $('#drop'), fileInput = $('#fileInput');
+drop.onclick = () => fileInput.click();
+drop.ondragover = e => { e.preventDefault(); drop.classList.add('over'); };
+drop.ondragleave = () => drop.classList.remove('over');
+drop.ondrop = e => { e.preventDefault(); drop.classList.remove('over'); if(e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]); };
+fileInput.onchange = () => { if(fileInput.files[0]) handleFile(fileInput.files[0]); fileInput.value=''; };
+
+function bufToBase64(buf){
+  const bytes = new Uint8Array(buf); let bin = '';
+  for (let i=0; i<bytes.length; i+=0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(i, i+0x8000));
+  return btoa(bin);
+}
+
+async function extractPdf(buf){
+  if(!window.pdfjsLib) throw new Error('PDF reader could not load (check internet connection).');
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(buf.slice(0))}).promise;
+  const pages = [];
+  for (let p=1; p<=pdf.numPages; p++){
+    const page = await pdf.getPage(p);
+    const tc = await page.getTextContent();
+    let line = '', out = '';
+    for (const it of tc.items){ line += it.str; if (it.hasEOL){ out += line + '\n'; line=''; } else if (it.str && !/\s$/.test(it.str)) line += ''; }
+    out += line;
+    pages.push(out.trim());
+  }
+  return {text: cleanText(pages.join('\n\n')), pages: pdf.numPages};
+}
+
+async function extractDocx(buf){
+  if(!window.mammoth) throw new Error('Word reader could not load (check internet connection).');
+  const r = await mammoth.extractRawText({arrayBuffer: buf});
+  return cleanText(r.value);
+}
+
+/* Legacy .doc (Word 97–2003) best-effort extraction */
+function extractLegacyDoc(buf){
+  const bytes = new Uint8Array(buf);
+  const head = new TextDecoder('latin1').decode(bytes.slice(0, 600));
+  if (head.startsWith('{\\rtf')) return stripRtf(new TextDecoder('latin1').decode(bytes));
+  if (/<html|<\?xml|<w:document/i.test(head)) {
+    const html = new TextDecoder('utf-8').decode(bytes);
+    const d = new DOMParser().parseFromString(html, 'text/html'); return cleanText(d.body ? d.body.innerText || d.body.textContent : html);
+  }
+  // UTF-16LE runs (common for Unicode / Arabic text in .doc)
+  const u16 = new TextDecoder('utf-16le').decode(bytes.slice(0, bytes.length - (bytes.length % 2)));
+  const runs16 = (u16.match(/[\p{L}\p{N}\p{P}\p{Zs}\r\n\t]{12,}/gu) || []).filter(r => (r.match(/\p{L}/gu)||[]).length > r.length*0.5);
+  // 8-bit runs (cp1252)
+  const l1 = new TextDecoder('windows-1252').decode(bytes);
+  const runs8 = (l1.match(/[A-Za-z0-9À-ÿ.,;:'"!?()\-–—’“”\s]{20,}/g) || []).filter(r => (r.match(/[A-Za-zÀ-ÿ]/g)||[]).length > r.length*0.6);
+  const t16 = runs16.join('\n'), t8 = runs8.join('\n');
+  const pick = t16.replace(/\s/g,'').length > t8.replace(/\s/g,'').length*0.8 ? t16 : t8;
+  return cleanText(pick.replace(/\r/g,'\n'));
+}
+function stripRtf(rtf){
+  return cleanText(rtf.replace(/\\par[d]?/g,'\n').replace(/\\'([0-9a-f]{2})/gi,(m,h)=>String.fromCharCode(parseInt(h,16)))
+    .replace(/\\u(-?\d+)\??/g,(m,n)=>String.fromCharCode(n<0?65536+ +n:+n)).replace(/\{\\\*[^{}]*\}/g,'')
+    .replace(/\\[a-z]+-?\d* ?/gi,'').replace(/[{}]/g,''));
+}
+function cleanText(t){ return (t||'').replace(/\u0000/g,'').replace(/[ \t]+\n/g,'\n').replace(/\n{3,}/g,'\n\n').replace(/[ \t]{2,}/g,' ').trim(); }
+
+async function handleFile(file){
+  const ext = (file.name.split('.').pop()||'').toLowerCase();
+  const info = $('#fileInfo'); scannedPdf = null; scannedBuf = null; needsClean = false;
+  busy(true, 'Reading file…', file.name);
+  try{
+    const buf = await file.arrayBuffer();
+    let text = '', note = '';
+    if (ext === 'pdf' || file.type === 'application/pdf'){
+      const r = await extractPdf(buf); text = r.text; needsClean = true;
+      note = `${r.pages} page(s)`;
+      if (text.replace(/\s/g,'').length < 20){
+        scannedPdf = bufToBase64(buf); scannedBuf = buf.slice(0);
+        note += ' · <b>Scanned/image PDF detected</b> — no selectable text. The AI will read the PDF directly when you generate.';
+      }
+    } else if (ext === 'docx'){
+      text = await extractDocx(buf);
+    } else if (ext === 'doc'){
+      try { text = await extractDocx(buf); } catch(e){ text = ''; }   // some .doc files are really .docx
+      if (!text){ text = extractLegacyDoc(buf); needsClean = true; note = 'Legacy .doc read in best-effort mode — please check the text below. For perfect results, save the file as .docx or PDF.'; }
+    } else if (ext === 'rtf'){
+      text = stripRtf(await file.text());
+    } else {
+      text = cleanText(await file.text());
+    }
+    $('#passageInput').value = text;
+    if (!$('#titleInput').value || $('#titleInput').dataset.auto){ $('#titleInput').value = file.name.replace(/\.[^.]+$/,'').replace(/[_-]+/g,' '); $('#titleInput').dataset.auto = '1'; }
+    updateWordCount();
+    info.style.display = 'block';
+    info.innerHTML = `📄 <b>${esc(file.name)}</b> · ${(file.size/1024).toFixed(0)} KB · ${countWords(text)} words extracted${note? ' · '+note:''}`;
+    toast(text ? 'Text extracted — review it, then generate.' : 'File loaded.');
+  } catch(err){
+    info.style.display = 'block'; info.innerHTML = '⚠️ Could not read <b>'+esc(file.name)+'</b>: '+esc(err.message);
+  } finally { busy(false); }
+}
+
+function countWords(t){ t=(t||'').trim(); return t ? t.split(/\s+/).length : 0; }
+function updateWordCount(){ $('#wordCount').textContent = countWords($('#passageInput').value) + ' words'; }
+$('#passageInput').oninput = () => { scannedPdf = null; scannedBuf = null; updateWordCount(); };
+
+/* =========================================================
+   CLAUDE API
+   ========================================================= */
+function getKey(){ return store.get('apiKey',''); }
+function getModel(){ return store.get('model','claude-sonnet-5-5') || 'claude-sonnet-5-5'; }
+
+const aiReady = () => !!(getKey() || SAMPLE_FN);
+async function pdfPageImages(buf, max){
+  const pdf = await pdfjsLib.getDocument({data: new Uint8Array(buf.slice(0))}).promise;
+  const out = [];
+  for (let p=1; p<=Math.min(pdf.numPages, max); p++){
+    const page = await pdf.getPage(p); const vp = page.getViewport({scale:1.6});
+    const c = document.createElement('canvas'); c.width = vp.width; c.height = vp.height;
+    await page.render({canvasContext:c.getContext('2d'), viewport:vp}).promise;
+    out.push(await new Promise(r=>c.toBlob(r,'image/jpeg',0.85)));
+  }
+  return out;
+}
+async function callClaude(content, maxTokens=8000, system){
+  const key = getKey();
+  if (!key && SAMPLE_FN){
+    let prompt = content, images;
+    if (Array.isArray(content)){
+      prompt = content.filter(c=>c.type==='text').map(c=>c.text).join('\n');
+      if (scannedBuf){
+        if (!IMG_LIMIT) throw new Error('This scanned PDF has no selectable text, and image reading is not available here. Please paste the text or upload a text-based PDF/Word file.');
+        images = await pdfPageImages(scannedBuf, IMG_LIMIT);
+        prompt = 'The passage is in the attached page images (in order).\n\n' + prompt;
+      }
+    }
+    if (system) prompt = system + '\n\n' + prompt;
+    try{
+      const r = await SAMPLE_FN(prompt, images ? {images, cache:false} : {cache:false});
+      return r.text;
+    } catch(e){
+      const msg = {not_granted:'Permission to use Claude was not given for this page.', rate_limited:'Claude is busy or your usage limit was reached. Please try again later.', prompt_too_large:'The text is too long. Please shorten it.', session_expired:'Please sign in to Claude again.'}[e && e.code];
+      throw new Error(msg || (e && (e.message || e.code)) || 'Claude request failed');
+    }
+  }
+  if(!key) throw new Error(HOSTED ? 'Claude is not available in this view.' : 'No API key set. Add one in Settings.');
+  const body = {model:getModel(), max_tokens:maxTokens, messages:[{role:'user', content}]};
+  if (system) body.system = system;
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+    body: JSON.stringify(body)
+  });
+  const data = await res.json().catch(()=>({}));
+  if(!res.ok) throw new Error((data.error && data.error.message) || ('API error '+res.status));
+  return (data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+}
+function parseJSON(text){
+  let t = text.trim().replace(/^```(?:json)?/i,'').replace(/```$/,'').trim();
+  const a = t.indexOf('{'), b = t.lastIndexOf('}');
+  const a2 = t.indexOf('['), b2 = t.lastIndexOf(']');
+  if (a2 > -1 && (a === -1 || a2 < a)) return JSON.parse(t.slice(a2, b2+1));
+  return JSON.parse(t.slice(a, b+1));
+}
+
+const SYSTEM = `You are GCAI, an expert reading-comprehension assessment designer for Madrasah Alsagoff Al-Arabiah, Singapore. You write fair, exam-standard comprehension materials for Primary, Secondary and Diploma learners in any language (English, Arabic, Malay and others). Your tone with students is encouraging and respectful (adab). You always respond with valid JSON only.`;
+
+function buildPrompt(opts, scanned){
+  return `Analyse the passage ${scanned ? 'in the attached PDF' : 'below'} and produce a complete comprehension teaching package.
+
+SETTINGS
+- Level: ${opts.level}
+- Examination format: ${opts.format}
+- Question types to include (use only these): ${opts.types.join(', ')}
+- Number of questions: ${opts.n}
+- Total marks (marks of all questions must add up to this): ${opts.marks}
+- Language for questions, model answers and keywords: ${opts.qLang}${opts.qLang==='Same as passage'?' (use the language the passage is written in)':''}
+- Language for teacher guidance (analysis, strategy, steps, common_errors, lesson plan): ${opts.gLang}${opts.gLang==='Same as passage'?' (use the language the passage is written in)':''}
+${opts.notes ? '- Teacher notes: '+opts.notes : ''}
+
+RULES
+1. Every question must be answerable from the passage. "evidence" is an exact short quotation copied character-for-character from the passage (original language, max ~25 words).
+2. Spread the selected types sensibly and order questions roughly as they appear in the passage, literal before higher-order; summary questions go last.
+3. Mirror the conventions of the chosen exam format (command words, mark allocation, summary word limits, vocabulary in context, etc.).
+4. "marking_scheme" points must sum to the question's marks.
+5. "keywords": 2–5 short words/phrases a correct answer should contain (same language as the model answer), used for automatic keyword checking.
+6. "strategy": how a student should approach this kind of question. "steps": 3–5 step-by-step explanation of how to arrive at the answer from the text.
+7. "passage_keywords": 6–12 important words or phrases copied exactly as they appear in the passage, with a simple meaning (meaning in the guidance language).
+8. "direction": "rtl" for Arabic, Jawi, Urdu, Persian or Hebrew text, otherwise "ltr".
+${scanned ? '9. Because the passage is a scanned PDF, include "passage_text": a faithful transcription of the passage.' : ''}
+${!scanned && opts.clean ? '9. The passage was extracted automatically from a PDF/Word file, so it may contain stray line numbers, page numbers, headers/footers, captions, two-column text in the wrong order, or letters lost from ligatures (e.g. "oors" for "floors", "of ce" for "office"). Include "passage_text": the main reading passage restored in correct reading order with paragraphs, fixing ONLY these extraction errors and never rewording. If the file also contains pre-reading activities, picture prompts or worksheet instructions, leave them out of passage_text and base all questions on the main passage only. Quote "evidence" from your cleaned passage_text.' : ''}
+
+Return ONLY JSON in exactly this shape:
+{
+  "title": "string",
+  "language": "name of the passage language",
+  "direction": "ltr|rtl",
+  ${scanned || opts.clean ? '"passage_text": "string",' : ''}
+  "analysis": {
+    "summary": "3–4 sentence summary",
+    "main_idea": "string",
+    "text_type": "e.g. narrative, expository, argumentative, poem, hadith commentary",
+    "themes": ["string"],
+    "tone": "string",
+    "difficulty": "Easy|Moderate|Challenging",
+    "suitable_for": "string",
+    "teaching_notes": "2–3 sentences on what makes this text challenging and what to pre-teach"
+  },
+  "passage_keywords": [{"term":"string","meaning":"string"}],
+  "questions": [{
+    "type": "literal|inferential|vocabulary|summary|purpose_tone",
+    "question": "string",
+    "marks": 2,
+    "model_answer": "string",
+    "evidence": "exact quote",
+    "keywords": ["string"],
+    "marking_scheme": [{"point":"string","marks":1}],
+    "strategy": "string",
+    "steps": ["string"],
+    "common_errors": "string"
+  }],
+  "lesson_plan": {
+    "duration": "e.g. 60 minutes",
+    "objectives": ["string"],
+    "activities": [{"stage":"string","minutes":10,"description":"string"}],
+    "differentiation": "string",
+    "exit_ticket": "string"
+  }
+}
+${scanned ? '' : '\nPASSAGE:\n"""\n' + opts.text + '\n"""'}`;
+}
+
+async function generate(){
+  const text = $('#passageInput').value.trim();
+  if (!text && !scannedPdf){ toast('Please upload a file or paste a passage first.'); return; }
+  if (!aiReady()){ if (HOSTED) uiAlert('Claude is not available in this view yet. Wait a moment and try again, or open the page on claude.ai.'); else { toast('Add your API key in Settings first (or try the sample).', 3500); showTab('settings'); } return; }
+  const types = $$('#typeChecks input:checked').map(i=>i.value);
+  if (!types.length){ toast('Select at least one question type.'); return; }
+  const opts = {
+    text: text.slice(0, 60000), level:$('#level').value, format:$('#format').value, types,
+    n: Math.max(3, Math.min(20, +$('#numQ').value || 8)), marks: Math.max(5, +$('#totalMarks').value || 25),
+    qLang:$('#qLang').value, gLang:$('#gLang').value, notes:$('#notes').value.trim(), clean: needsClean
+  };
+  const scanned = !!scannedPdf && text.replace(/\s/g,'').length < 20;
+  const content = scanned
+    ? [{type:'document', source:{type:'base64', media_type:'application/pdf', data:scannedPdf}}, {type:'text', text:buildPrompt(opts, true)}]
+    : buildPrompt(opts, false);
+  busy(true, 'Analysing text & writing questions…', 'This usually takes 30–90 seconds.');
+  try{
+    const raw = await callClaude(content, 12000, SYSTEM);
+    const out = parseJSON(raw);
+    const set = normaliseSet(out, {
+      passage: (scanned || opts.clean) && out.passage_text ? out.passage_text : text,
+      title: ($('#titleInput').dataset.auto && out.title) ? out.title : ($('#titleInput').value.trim() || out.title),
+      level: opts.level, format: opts.format
+    });
+    if ((scanned || opts.clean) && out.passage_text) { $('#passageInput').value = set.passage; updateWordCount(); needsClean = false; }
+    current = set; renderOutput(); toast('Package ready ✓');
+  } catch(err){
+    console.error(err);
+    uiAlert('Generation failed:\n\n' + (err.message||err.code||err) + '\n\nTip: very long texts may need to be shortened, or try again.');
+  } finally { busy(false); }
+}
+
+function normaliseSet(out, extra){
+  const qs = (out.questions||[]).map((q,i)=>({
+    id: 'q'+(i+1), type: TYPE_LABEL[q.type] ? q.type : 'literal',
+    question: q.question||'', marks: +q.marks || 1, model_answer: q.model_answer||'', evidence: q.evidence||'',
+    keywords: Array.isArray(q.keywords)? q.keywords : [], marking_scheme: Array.isArray(q.marking_scheme)? q.marking_scheme : [],
+    strategy: q.strategy||'', steps: Array.isArray(q.steps)? q.steps : [], common_errors: q.common_errors||''
+  }));
+  return {
+    id: uid(), created: new Date().toISOString(),
+    title: extra.title || out.title || 'Untitled passage', language: out.language || 'Unknown',
+    direction: out.direction === 'rtl' ? 'rtl' : 'ltr', passage: extra.passage, level: extra.level, format: extra.format,
+    analysis: out.analysis || {}, passage_keywords: out.passage_keywords || [], questions: qs, lesson_plan: out.lesson_plan || null
+  };
+}
+const totalMarks = set => set.questions.reduce((a,q)=>a+(+q.marks||0),0);
+
+/* =========================================================
+   RENDER OUTPUT (teacher view)
+   ========================================================= */
+function highlightPassage(set, withEvidence=true){
+  let html = esc(set.passage||'');
+  const terms = [];
+  (set.passage_keywords||[]).forEach(k=>k.term && terms.push({t:k.term, c:''}));
+  if (withEvidence) set.questions.forEach(q=>q.evidence && q.evidence.length>3 && terms.push({t:q.evidence.replace(/^["“'‘]|["”'’.]$/g,''), c:'ev'}));
+  terms.sort((a,b)=>b.t.length-a.t.length);
+  const valid = terms.filter(x=>x.t.trim().length>1);
+  if (valid.length){
+    const map = {}; valid.forEach(x=>{ map[esc(x.t).toLowerCase()] = x.c; });
+    const rx = new RegExp('(' + valid.map(x=>esc(x.t).replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/\s+/g,'\\s+')).join('|') + ')', 'giu');
+    html = html.replace(rx, m => { const c = map[m.toLowerCase().replace(/\s+/g,' ')] ?? ''; return `<mark class="${c}">${m}</mark>`; });
+  }
+  return html.split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('');
+}
+
+function renderOutput(){
+  const s = current, o = $('#output'); if(!s) return;
+  const dir = isRtl(s) ? 'rtl' : 'ltr';
+  const a = s.analysis || {};
+  o.innerHTML = `
+    <div class="row" style="align-items:flex-start;margin-bottom:10px">
+      <div style="flex:3"><h2 style="margin:0">${esc(s.title)}</h2>
+        <div class="hint">${esc(s.language)} · ${esc(s.level)} · ${esc(s.format)} · ${s.questions.length} questions · ${totalMarks(s)} marks</div></div>
+    </div>
+    <div class="toolbar">
+      <button class="btn primary sm" id="oSave">💾 Save to library</button>
+      <button class="btn sm" id="oPractice">▶ Assign for practice</button>
+      <button class="btn sm" id="oPrintW">🖨 Student worksheet</button>
+      <button class="btn sm" id="oPrintK">🖨 Answer key</button>
+      <button class="btn sm" id="oWord">⬇ Word (.doc)</button>
+      <button class="btn sm" id="oJson">⬇ JSON</button>
+    </div>
+    <div class="subtabs" id="oTabs">
+      <button data-s="qa" class="active">Questions &amp; Answers</button>
+      <button data-s="analysis">Text Analysis</button>
+      <button data-s="passage">Passage &amp; Keywords</button>
+      <button data-s="scheme">Marking Scheme</button>
+      <button data-s="lesson">Lesson Plan</button>
+    </div>
+    <div class="sub active" id="s-qa">
+      <p class="hint" style="margin-top:0">✎ Click any question or model answer to edit it before saving.</p>
+      ${s.questions.map((q,i)=>teacherQ(q,i,dir)).join('')}
+    </div>
+    <div class="sub" id="s-analysis">
+      <div class="stats" style="margin-bottom:16px">
+        <div class="stat"><div class="k">Language</div><div class="v">${esc(s.language)}</div></div>
+        <div class="stat"><div class="k">Text type</div><div class="v">${esc(a.text_type||'—')}</div></div>
+        <div class="stat"><div class="k">Difficulty</div><div class="v">${esc(a.difficulty||'—')}</div></div>
+        <div class="stat"><div class="k">Words</div><div class="v">${countWords(s.passage)}</div></div>
+        <div class="stat"><div class="k">Tone</div><div class="v" style="font-size:.95rem">${esc(a.tone||'—')}</div></div>
+      </div>
+      <div class="block ans"><span class="lab">Main idea</span>${esc(a.main_idea||'')}</div>
+      <div class="block"><span class="lab">Summary</span>${esc(a.summary||'')}</div>
+      <div class="block"><span class="lab">Themes</span>${(a.themes||[]).map(t=>`<span class="kw">${esc(t)}</span>`).join('')}</div>
+      <div class="block"><span class="lab">Suitable for</span>${esc(a.suitable_for||'')}</div>
+      <div class="block str"><span class="lab">Teaching notes</span>${esc(a.teaching_notes||'')}</div>
+      <h3 style="margin-top:18px">Question-type coverage</h3>
+      <div class="bars">${coverageBars(s)}</div>
+    </div>
+    <div class="sub" id="s-passage">
+      <div class="legend"><span>Key vocabulary</span><span class="e">Answer evidence</span></div>
+      <div class="passage" dir="${dir}">${highlightPassage(s)}</div>
+      <h3 style="margin-top:18px">Key vocabulary</h3>
+      <table><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody>
+      ${(s.passage_keywords||[]).map(k=>`<tr><td dir="${dir}"><b>${esc(k.term)}</b></td><td dir="auto">${esc(k.meaning)}</td></tr>`).join('')}
+      </tbody></table>
+    </div>
+    <div class="sub" id="s-scheme">
+      <table><thead><tr><th>#</th><th>Type</th><th>Award marks for</th><th>Marks</th></tr></thead><tbody>
+      ${s.questions.map((q,i)=>`<tr><td><b>${i+1}</b></td><td><span class="badge t-${q.type}">${TYPE_LABEL[q.type]}</span></td>
+        <td dir="auto">${(q.marking_scheme||[]).length ? '<ul style="margin:0;padding-inline-start:18px">'+q.marking_scheme.map(m=>`<li>${esc(m.point)} <b>[${esc(m.marks)}]</b></li>`).join('')+'</ul>' : esc(q.model_answer)}</td>
+        <td><b>${q.marks}</b></td></tr>`).join('')}
+      <tr><td colspan="3" style="text-align:end"><b>Total</b></td><td><b>${totalMarks(s)}</b></td></tr></tbody></table>
+    </div>
+    <div class="sub" id="s-lesson">${lessonPlanHtml(s)}</div>`;
+  $$('#oTabs button').forEach(b=>b.onclick=()=>{ $$('#oTabs button').forEach(x=>x.classList.toggle('active',x===b)); $$('#output .sub').forEach(x=>x.classList.toggle('active', x.id==='s-'+b.dataset.s)); });
+  $$('#output [data-edit]').forEach(el=>el.addEventListener('blur', ()=>{ const [i,f]=el.dataset.edit.split(':'); current.questions[+i][f] = el.innerText.trim(); syncSaved(); }));
+  $('#oSave').onclick = () => { saveSet(current); toast('Saved to library ✓'); };
+  $('#oPractice').onclick = () => { saveSet(current); showTab('practice'); $('#pSet').value = current.id; };
+  $('#oPrintW').onclick = () => printSet(current, false);
+  $('#oPrintK').onclick = () => printSet(current, true);
+  $('#oWord').onclick = () => HOSTED ? saveFile(safeName(current.title)+'_worksheet_and_key.html', worksheetHtml(current, true, true)) : download(safeName(current.title)+'.doc', new Blob(['﻿'+worksheetHtml(current, true, true)], {type:'application/msword'}));
+  $('#oJson').onclick = () => saveFile(safeName(current.title)+'.gcai.json', JSON.stringify(current, null, 2));
+}
+
+function teacherQ(q,i,dir){
+  return `<div class="q">
+    <div class="q-head"><div class="qnum">${i+1}</div><span class="badge t-${q.type}">${TYPE_LABEL[q.type]}</span><span class="marks">[${q.marks} mark${q.marks>1?'s':''}]</span></div>
+    <div class="qtext" dir="${dir}" contenteditable="true" data-edit="${i}:question">${esc(q.question)}</div>
+    <div class="block ans" dir="${dir}"><span class="lab">Model answer</span><span contenteditable="true" data-edit="${i}:model_answer">${esc(q.model_answer)}</span></div>
+    ${q.evidence?`<div class="block ev" dir="${dir}"><span class="lab">Evidence from text</span>“${esc(q.evidence)}”</div>`:''}
+    ${q.keywords.length?`<div style="margin:6px 0" dir="${dir}"><span class="hint">Answer keywords: </span>${q.keywords.map(k=>`<span class="kw">${esc(k)}</span>`).join('')}</div>`:''}
+    <div class="block str" dir="auto"><span class="lab">Answering strategy</span>${esc(q.strategy)}
+      ${q.steps.length?`<ol>${q.steps.map(s=>`<li>${esc(s)}</li>`).join('')}</ol>`:''}</div>
+    ${q.common_errors?`<div class="block err" dir="auto"><span class="lab">Common errors</span>${esc(q.common_errors)}</div>`:''}
+  </div>`;
+}
+function coverageBars(s){
+  const by = {}; s.questions.forEach(q=>{ by[q.type]=(by[q.type]||0)+(+q.marks||0); });
+  const tot = totalMarks(s)||1;
+  return Object.keys(TYPE_LABEL).filter(t=>by[t]).map(t=>`<div class="bar"><span>${TYPE_LABEL[t]}</span><div class="track"><div class="fill" style="width:${by[t]/tot*100}%;background:${TYPE_COLOR[t]}"></div></div><b>${by[t]} m</b></div>`).join('');
+}
+function lessonPlanHtml(s){
+  const lp = s.lesson_plan;
+  if(!lp) return '<p class="hint">No lesson plan in this set.</p>';
+  return `<div dir="auto">
+    <div class="stats" style="margin-bottom:14px"><div class="stat"><div class="k">Duration</div><div class="v">${esc(lp.duration||'')}</div></div>
+    <div class="stat"><div class="k">Level</div><div class="v">${esc(s.level||'')}</div></div></div>
+    <h4>Learning objectives</h4><ul>${(lp.objectives||[]).map(o=>`<li>${esc(o)}</li>`).join('')}</ul>
+    <h4>Lesson flow</h4>
+    <table><thead><tr><th>Stage</th><th>Min</th><th>Activity</th></tr></thead><tbody>
+    ${(lp.activities||[]).map(a=>`<tr><td><b>${esc(a.stage)}</b></td><td>${esc(a.minutes)}</td><td>${esc(a.description)}</td></tr>`).join('')}</tbody></table>
+    <div class="block str" style="margin-top:12px"><span class="lab">Differentiation</span>${esc(lp.differentiation||'')}</div>
+    <div class="block ans"><span class="lab">Exit ticket</span>${esc(lp.exit_ticket||'')}</div></div>`;
+}
+
+/* ---------- print / export ---------- */
+function worksheetHtml(s, withAnswers, standalone=false){
+  const dir = isRtl(s)?'rtl':'ltr';
+  const body = `
+    <div style="border-bottom:2px solid #0d4f3c;padding-bottom:8px;margin-bottom:14px">
+      <div style="font-size:10pt;color:#555">Madrasah Alsagoff Al-Arabiah · Global Comprehension AI</div>
+      <h1 style="font-size:18pt;margin:4px 0">${esc(s.title)}${withAnswers?' — Answer Key':''}</h1>
+      <div style="font-size:10pt">${esc(s.level)} · ${esc(s.format)} · Total: ${totalMarks(s)} marks</div>
+      ${withAnswers?'':'<div style="margin-top:10px;font-size:11pt">Name: ______________________ &nbsp; Class: ________ &nbsp; Date: __________</div>'}
+    </div>
+    <h2 style="font-size:13pt">Passage</h2>
+    <div dir="${dir}" style="line-height:1.7;${dir==='rtl'?'font-family:\'Noto Naskh Arabic\',\'Traditional Arabic\',serif;font-size:14pt':''}">${esc(s.passage).split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}</div>
+    <h2 style="font-size:13pt;margin-top:18px">Questions</h2>
+    ${s.questions.map((q,i)=>`<div class="q" dir="${dir}" style="margin-bottom:14px">
+      <p><b>${i+1}.</b> ${esc(q.question)} <span style="float:${dir==='rtl'?'left':'right'}">[${q.marks}]</span></p>
+      ${withAnswers ? `<p style="background:#eef6f2;padding:6px 10px;border-left:3px solid #0d4f3c"><b>Answer:</b> ${esc(q.model_answer)}</p>
+        ${(q.marking_scheme||[]).length?`<ul style="font-size:10pt">${q.marking_scheme.map(m=>`<li>${esc(m.point)} [${esc(m.marks)}]</li>`).join('')}</ul>`:''}`
+        : Array.from({length: Math.min(6, Math.max(2, q.marks+1))}).map(()=>'<div class="lines" style="border-bottom:1px solid #999;height:26px"></div>').join('')}
+    </div>`).join('')}`;
+  if(!standalone) return body;
+  return `<html><head><meta charset="utf-8"><title>${esc(s.title)}</title><style>body{font-family:Calibri,Arial,sans-serif;font-size:12pt}</style></head><body>${body}</body></html>`;
+}
+function printSet(s, withAnswers){
+  if (HOSTED){ saveFile(safeName(s.title)+(withAnswers?'_answer_key':'_worksheet')+'.html', worksheetHtml(s, withAnswers, true)); toast('Open the saved file in a browser or Word to print.', 4000); return; }
+  $('#printArea').innerHTML = worksheetHtml(s, withAnswers); setTimeout(()=>window.print(), 50); }
+
+/* =========================================================
+   LIBRARY
+   ========================================================= */
+const getLib = () => store.get('library', []);
+function saveSet(s){ const lib = getLib().filter(x=>x.id!==s.id); lib.unshift(s); store.set('library', lib); }
+function syncSaved(){ if(current && getLib().some(x=>x.id===current.id)) saveSet(current); }
+function renderLibrary(){
+  const lib = getLib(), el = $('#libraryList');
+  if(!lib.length){ el.innerHTML = '<div class="empty"><div class="big">No saved sets yet</div>Generate a package and click “Save to library”.</div>'; return; }
+  el.innerHTML = lib.map(s=>`<div class="lib-item">
+    <div class="meta"><b dir="auto">${esc(s.title)}</b><br><small>${esc(s.language)} · ${esc(s.level)} · ${s.questions.length} Qs · ${totalMarks(s)} marks · ${new Date(s.created).toLocaleDateString()}</small></div>
+    <button class="btn sm" data-open="${s.id}">Open</button>
+    <button class="btn sm primary" data-prac="${s.id}">Practice</button>
+    <button class="btn sm" data-exp="${s.id}">Export</button>
+    <button class="btn sm danger" data-del="${s.id}">Delete</button></div>`).join('');
+  el.querySelectorAll('[data-open]').forEach(b=>b.onclick=()=>{ current = getLib().find(x=>x.id===b.dataset.open); showTab('create'); renderOutput(); });
+  el.querySelectorAll('[data-prac]').forEach(b=>b.onclick=()=>{ showTab('practice'); $('#pSet').value=b.dataset.prac; });
+  el.querySelectorAll('[data-exp]').forEach(b=>b.onclick=()=>{ const s=getLib().find(x=>x.id===b.dataset.exp); saveFile(safeName(s.title)+'.gcai.json', JSON.stringify(s,null,2)); });
+  el.querySelectorAll('[data-del]').forEach(b=>b.onclick=async()=>{ if(await uiConfirm('Delete this set?')){ store.set('library', getLib().filter(x=>x.id!==b.dataset.del)); renderLibrary(); } });
+}
+$('#importBtn').onclick = () => $('#importInput').click();
+$('#importInput').onchange = async e => {
+  const f = e.target.files[0]; if(!f) return;
+  try{ const s = JSON.parse(await f.text()); if(!s.questions || !s.passage) throw new Error('Not a GCAI set');
+    s.id = s.id || uid(); saveSet(s); renderLibrary(); toast('Imported ✓'); } catch(err){ uiAlert('Import failed: '+err.message); }
+  e.target.value='';
+};
+
+/* =========================================================
+   STUDENT PRACTICE  (attempt first → strategy → feedback)
+   ========================================================= */
+function refreshPracticeSets(){
+  const lib = getLib(), sel = $('#pSet'), prev = sel.value;
+  sel.innerHTML = lib.length ? lib.map(s=>`<option value="${s.id}">${esc(s.title)} — ${esc(s.level)}</option>`).join('') : '<option value="">No saved sets — create one first</option>';
+  if (prev && lib.some(s=>s.id===prev)) sel.value = prev;
+  $('#pName').value = $('#pName').value || store.get('lastName','');
+  $('#pClass').value = $('#pClass').value || store.get('lastClass','');
+  if(!practice) $('#practiceArea').innerHTML = '<div class="card empty"><div class="big">Ready when you are</div>Choose a set, type your name and press <b>Start practice</b>.</div>';
+}
+$('#pStart').onclick = () => {
+  const s = getLib().find(x=>x.id===$('#pSet').value);
+  const name = $('#pName').value.trim();
+  if(!s){ toast('Choose a comprehension set.'); return; }
+  if(!name){ toast('Please type your name.'); return; }
+  store.set('lastName', name); store.set('lastClass', $('#pClass').value.trim());
+  practice = {set:s, name, cls:$('#pClass').value.trim() || '—', answers:{}, hintsUsed:{}, submitted:false};
+  renderPractice();
+};
+function renderPractice(){
+  const {set:s} = practice, dir = isRtl(s)?'rtl':'ltr';
+  $('#practiceArea').innerHTML = `<div class="grid-practice">
+    <div class="card sticky"><h2 dir="auto">${esc(s.title)}</h2><div class="hint" style="margin-bottom:10px">Read the passage carefully. Refer back to it as you answer.</div>
+      <div class="passage" dir="${dir}" id="pPassage">${esc(s.passage).split(/\n\s*\n/).map(p=>`<p>${p.replace(/\n/g,'<br>')}</p>`).join('')}</div></div>
+    <div class="card"><div class="pf-note">🌱 <b>Try first, then check your thinking.</b> Write your own answer before opening the strategy hint — struggling a little helps you learn more.</div>
+      <div id="pQs" style="margin-top:14px">${s.questions.map((q,i)=>`<div class="q pq" data-i="${i}">
+        <div class="q-head"><div class="qnum">${i+1}</div><span class="badge t-${q.type}">${TYPE_LABEL[q.type]}</span><span class="marks">[${q.marks}]</span></div>
+        <div class="qtext" dir="${dir}">${esc(q.question)}</div>
+        <textarea dir="${dir}" data-a="${i}" placeholder="Your answer…"></textarea>
+        <div class="row" style="justify-content:flex-start;margin-top:6px"><button class="btn sm" data-h="${i}" disabled style="flex:0 0 auto">💡 Strategy hint</button><span class="hint" data-hn="${i}">Write an attempt to unlock the hint</span></div>
+        <div data-hint="${i}"></div><div data-res="${i}"></div></div>`).join('')}</div>
+      <button class="btn primary block" id="pSubmit" style="padding:12px">Submit for marking</button>
+      <div id="pSummary"></div></div></div>`;
+  $$('#pQs textarea').forEach(t=>t.oninput=()=>{ const i=t.dataset.a; practice.answers[i]=t.value; const ok=t.value.trim().length>=5; const b=$(`[data-h="${i}"]`); b.disabled=!ok; $(`[data-hn="${i}"]`).textContent= ok?'':'Write an attempt to unlock the hint'; });
+  $$('#pQs [data-h]').forEach(b=>b.onclick=()=>{ const i=b.dataset.h, q=practice.set.questions[i]; practice.hintsUsed[i]=true;
+    $(`[data-hint="${i}"]`).innerHTML = `<div class="block str" dir="auto"><span class="lab">Strategy</span>${esc(q.strategy)}</div>`; b.disabled=true; });
+  $('#pSubmit').onclick = submitPractice;
+}
+
+async function submitPractice(){
+  const s = practice.set;
+  const answers = s.questions.map((q,i)=>(practice.answers[i]||'').trim());
+  if (answers.filter(Boolean).length === 0){ toast('Answer at least one question first.'); return; }
+  if (answers.some(a=>!a) && !(await uiConfirm('Some questions are blank. Submit anyway?'))) return;
+  let results;
+  if (aiReady()){
+    busy(true,'Marking your answers…','Checking against the marking scheme');
+    try{ results = await aiMark(s, answers); }
+    catch(err){ console.error(err); toast('AI marking unavailable — using keyword marking.', 3500); results = keywordMark(s, answers); }
+    finally{ busy(false); }
+  } else results = keywordMark(s, answers);
+  showResults(results, answers);
+}
+
+async function aiMark(s, answers){
+  const payload = s.questions.map((q,i)=>({id:i+1, type:q.type, question:q.question, marks:q.marks, model_answer:q.model_answer, marking_scheme:q.marking_scheme, student_answer:answers[i]||'(blank)'}));
+  const prompt = `Mark this student's comprehension answers fairly and consistently against the marking scheme. Accept answers in the student's own words if the meaning is correct; do not penalise minor spelling/grammar unless the question is about language. Lifting irrelevant chunks of text should not earn full marks.
+
+Level: ${s.level}. Exam format: ${s.format}.
+
+PASSAGE:
+"""
+${s.passage.slice(0, 40000)}
+"""
+
+ANSWERS TO MARK (JSON):
+${JSON.stringify(payload)}
+
+For each item return: "id", "score" (integer 0..marks), "feedback" (1–2 warm, specific sentences addressed to the student in the same language as the question: what was good, what was missing), "next_step" (one short tip for improving).
+Return ONLY a JSON array.`;
+  const raw = await callClaude(prompt, 4000, SYSTEM);
+  const arr = parseJSON(raw);
+  return s.questions.map((q,i)=>{ const r = (Array.isArray(arr)?arr:[]).find(x=>+x.id===i+1) || {};
+    return {score: Math.max(0, Math.min(q.marks, Math.round(+r.score||0))), feedback:r.feedback||'', next_step:r.next_step||'', mode:'ai'}; });
+}
+function keywordMark(s, answers){
+  return s.questions.map((q,i)=>{
+    const a = (answers[i]||'').toLowerCase();
+    const kw = q.keywords.length ? q.keywords : [];
+    if(!a) return {score:0, feedback:'No answer given.', next_step:'Attempt every question — partial answers can still earn marks.', mode:'kw'};
+    if(!kw.length) return {score:0, feedback:'This answer needs teacher marking.', next_step:'', mode:'kw'};
+    const hit = kw.filter(k=>a.includes(k.toLowerCase()));
+    const score = Math.round(q.marks * hit.length / kw.length);
+    const miss = kw.filter(k=>!hit.includes(k));
+    return {score, feedback: hit.length ? `You included: ${hit.join(', ')}.` + (miss.length?` Consider also: ${miss.join(', ')}.`:' Well done!') : 'Your answer did not include the key ideas expected.', next_step:'Compare your answer with the model answer and the evidence in the passage.', mode:'kw'};
+  });
+}
+
+function showResults(results, answers){
+  const s = practice.set, dir = isRtl(s)?'rtl':'ltr';
+  let total = 0, max = 0; const byType = {};
+  results.forEach((r,i)=>{ const q=s.questions[i]; total+=r.score; max+=q.marks;
+    byType[q.type] = byType[q.type] || {score:0,max:0}; byType[q.type].score+=r.score; byType[q.type].max+=q.marks;
+    const pct = r.score/q.marks, cls = pct>=0.75?'good':pct>=0.4?'mid':'low';
+    $(`[data-res="${i}"]`).innerHTML = `<div class="result ${cls}" dir="auto"><b>${r.score} / ${q.marks}</b> — ${esc(r.feedback)}${r.next_step?`<br><i>Next step: ${esc(r.next_step)}</i>`:''}</div>
+      <details style="margin-top:8px"><summary>See model answer &amp; step-by-step explanation</summary>
+        <div class="block ans" dir="${dir}"><span class="lab">Model answer</span>${esc(q.model_answer)}</div>
+        ${q.evidence?`<div class="block ev" dir="${dir}"><span class="lab">Evidence</span>“${esc(q.evidence)}”</div>`:''}
+        <div class="block str" dir="auto"><span class="lab">How to get there</span><ol>${q.steps.map(x=>`<li>${esc(x)}</li>`).join('')}</ol></div></details>`;
+  });
+  $$('#pQs textarea').forEach(t=>t.readOnly=true);
+  $('#pSubmit').style.display='none';
+  const pct = max? Math.round(total/max*100):0;
+  const weakest = Object.entries(byType).sort((a,b)=>a[1].score/a[1].max - b[1].score/b[1].max)[0];
+  $('#pSummary').innerHTML = `<div class="card" style="margin-top:16px;text-align:center;background:var(--green-soft)">
+    <div class="hint">Your score</div><div class="scorebig">${total} / ${max}</div><div><b>${pct}%</b> · ${results[0]&&results[0].mode==='ai'?'Marked by AI':'Keyword marking (teacher may review)'}</div>
+    ${weakest?`<p style="margin-bottom:0">Focus next on <b>${TYPE_LABEL[weakest[0]]}</b> questions — see the strategy guide in the Lesson Package.</p>`:''}
+    <button class="btn" id="pAgain" style="margin-top:12px">Practise another set</button></div>`;
+  $('#pAgain').onclick = ()=>{ practice=null; refreshPracticeSets(); window.scrollTo(0,0); };
+  const attempts = store.get('attempts', []);
+  attempts.push({id:uid(), date:new Date().toISOString(), setId:s.id, setTitle:s.title, student:practice.name, cls:practice.cls,
+    total, max, pct, byType, hints:Object.keys(practice.hintsUsed).length, mode: results[0]&&results[0].mode,
+    items: results.map((r,i)=>({q:i+1, type:s.questions[i].type, score:r.score, max:s.questions[i].marks, answer:answers[i]}))});
+  store.set('attempts', attempts);
+  $('#pSummary').scrollIntoView({behavior:'smooth'});
+}
+
+/* =========================================================
+   ANALYTICS
+   ========================================================= */
+function renderAnalytics(){
+  const all = store.get('attempts', []);
+  const setSel = $('#aSet'), clsSel = $('#aClass'), ps = setSel.value, pc = clsSel.value;
+  const sets = [...new Map(all.map(a=>[a.setId,a.setTitle])).entries()];
+  const classes = [...new Set(all.map(a=>a.cls))];
+  setSel.innerHTML = '<option value="">All sets</option>' + sets.map(([id,t])=>`<option value="${id}">${esc(t)}</option>`).join('');
+  clsSel.innerHTML = '<option value="">All classes</option>' + classes.map(c=>`<option>${esc(c)}</option>`).join('');
+  setSel.value = ps; clsSel.value = pc;
+  setSel.onchange = clsSel.onchange = renderAnalytics;
+  const data = all.filter(a=>(!setSel.value||a.setId===setSel.value)&&(!clsSel.value||a.cls===clsSel.value));
+  const area = $('#analyticsArea');
+  if(!data.length){ area.innerHTML = '<div class="card empty"><div class="big">No attempts yet</div>Student results appear here after they submit a practice set.</div>'; return; }
+  const avg = Math.round(data.reduce((a,x)=>a+x.pct,0)/data.length);
+  const students = [...new Set(data.map(a=>a.student))];
+  const byType = {};
+  data.forEach(a=>Object.entries(a.byType).forEach(([t,v])=>{ byType[t]=byType[t]||{score:0,max:0}; byType[t].score+=v.score; byType[t].max+=v.max; }));
+  const typeRows = Object.keys(TYPE_LABEL).filter(t=>byType[t]).map(t=>({t, pct: Math.round(byType[t].score/byType[t].max*100)}));
+  const weakest = [...typeRows].sort((a,b)=>a.pct-b.pct)[0];
+  const perStudent = students.map(n=>{ const xs = data.filter(a=>a.student===n); const bt={};
+    xs.forEach(a=>Object.entries(a.byType).forEach(([t,v])=>{bt[t]=bt[t]||{score:0,max:0};bt[t].score+=v.score;bt[t].max+=v.max;}));
+    const w = Object.entries(bt).sort((a,b)=>a[1].score/a[1].max-b[1].score/b[1].max)[0];
+    return {n, cls:xs[xs.length-1].cls, count:xs.length, avg:Math.round(xs.reduce((a,x)=>a+x.pct,0)/xs.length), last:xs[xs.length-1].pct, weak: w? TYPE_LABEL[w[0]]+' ('+Math.round(w[1].score/w[1].max*100)+'%)' : '—'};
+  }).sort((a,b)=>a.avg-b.avg);
+  const atRisk = perStudent.filter(p=>p.avg<50);
+  area.innerHTML = `
+  <div class="stats" style="margin-bottom:20px">
+    <div class="stat card"><div class="k">Attempts</div><div class="v">${data.length}</div></div>
+    <div class="stat card"><div class="k">Students</div><div class="v">${students.length}</div></div>
+    <div class="stat card"><div class="k">Average score</div><div class="v">${avg}%</div></div>
+    <div class="stat card"><div class="k">Weakest skill</div><div class="v">${weakest?TYPE_LABEL[weakest.t]+' · '+weakest.pct+'%':'—'}</div></div>
+    <div class="stat card"><div class="k">Need intervention (&lt;50%)</div><div class="v" style="color:${atRisk.length?'var(--red)':'inherit'}">${atRisk.length}</div></div>
+  </div>
+  <div class="grid-practice">
+    <div class="card"><h3>Mastery by question type</h3><div class="bars">
+      ${typeRows.map(r=>`<div class="bar"><span>${TYPE_LABEL[r.t]}</span><div class="track"><div class="fill" style="width:${r.pct}%;background:${TYPE_COLOR[r.t]}"></div></div><b>${r.pct}%</b></div>`).join('')}</div>
+      ${weakest?`<div class="block str" style="margin-top:14px"><span class="lab">Suggested intervention</span>Re-teach <b>${TYPE_LABEL[weakest.t]}</b> questions using the strategy guide in the Lesson Package, then assign a fresh passage targeting this type only (untick the other types when generating).</div>`:''}</div>
+    <div class="card"><h3>Students (lowest average first)</h3><div style="overflow:auto"><table><thead><tr><th>Student</th><th>Class</th><th>Attempts</th><th>Avg</th><th>Latest</th><th>Weakest</th></tr></thead><tbody>
+      ${perStudent.map(p=>`<tr><td><b>${esc(p.n)}</b></td><td>${esc(p.cls)}</td><td>${p.count}</td><td style="color:${p.avg<50?'var(--red)':'inherit'}"><b>${p.avg}%</b></td><td>${p.last}%</td><td>${esc(p.weak)}</td></tr>`).join('')}</tbody></table></div></div>
+  </div>
+  <div class="card" style="margin-top:20px"><h3>All attempts</h3><div style="overflow:auto"><table><thead><tr><th>Date</th><th>Student</th><th>Class</th><th>Set</th><th>Score</th><th>%</th><th>Hints</th><th>Marking</th></tr></thead><tbody>
+    ${[...data].reverse().map(a=>`<tr><td>${new Date(a.date).toLocaleString()}</td><td>${esc(a.student)}</td><td>${esc(a.cls)}</td><td dir="auto">${esc(a.setTitle)}</td><td>${a.total}/${a.max}</td><td><b>${a.pct}%</b></td><td>${a.hints}</td><td>${a.mode==='ai'?'AI':'Keyword'}</td></tr>`).join('')}</tbody></table></div></div>`;
+}
+$('#exportCsv').onclick = () => {
+  const all = store.get('attempts', []); if(!all.length){ toast('No data to export.'); return; }
+  const types = Object.keys(TYPE_LABEL);
+  const rows = [['Date','Student','Class','Set','Score','Max','Percent','Hints used','Marking', ...types.map(t=>TYPE_LABEL[t]+' %')]];
+  all.forEach(a=>rows.push([a.date,a.student,a.cls,a.setTitle,a.total,a.max,a.pct,a.hints,a.mode, ...types.map(t=>a.byType[t]?Math.round(a.byType[t].score/a.byType[t].max*100):'')]));
+  saveFile('GCAI_results.csv', '﻿'+rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n'), 'text/csv');
+};
+$('#clearAttempts').onclick = async () => { if(await uiConfirm('Delete ALL student attempts on this device?')){ store.set('attempts', []); renderAnalytics(); } };
+
+/* =========================================================
+   LESSON PACKAGE (strategy guides, user guide, FAQ)
+   ========================================================= */
+const STRATEGIES = {
+  literal: {ms:'Soalan Literal', ar:'الأسئلة الحرفية', look:'Answer is stated directly in the text.', cmd:'Who, what, when, where, which, state, name, identify', steps:['Underline the key words in the question.','Scan the passage for those words or their synonyms.','Read the sentence before and after.','Answer in a full sentence, in your own words where possible.']},
+  inferential: {ms:'Soalan Inferens', ar:'الأسئلة الاستنتاجية', look:'Answer is implied — you combine clues with your own reasoning.', cmd:'Why, how do you know, what suggests, explain, infer', steps:['Find the part of the text the question refers to.','Collect two or more clues (actions, words, feelings).','Ask: “What do these clues tell me that the writer didn’t say?”','State your inference, then support it with evidence.']},
+  vocabulary: {ms:'Soalan Kosa Kata', ar:'أسئلة المفردات', look:'Meaning of a word or phrase as used in this context.', cmd:'What does … mean, give a word that means, explain the phrase', steps:['Locate the word and read the whole sentence.','Use context clues: synonyms, contrasts, examples nearby.','Substitute your meaning back into the sentence — does it still make sense?','Give the meaning in the same part of speech.']},
+  summary: {ms:'Soalan Ringkasan', ar:'أسئلة التلخيص', look:'Key points only, within a word limit, in your own words.', cmd:'Summarise, in no more than … words, outline the main points', steps:['Identify the paragraphs the question limits you to.','List the relevant points in note form.','Remove examples, repetition and minor details.','Link points in fluent sentences and count your words.']},
+  purpose_tone: {ms:'Tujuan & Nada Pengarang', ar:'غرض الكاتب ونبرته', look:'Why the writer wrote it and how they feel about the subject.', cmd:'Why did the writer…, what is the tone, what effect, how does the writer feel', steps:['Ask: is the writer informing, persuading, entertaining or reflecting?','Notice emotive words, punctuation and imagery.','Name the tone with a precise adjective (e.g. critical, nostalgic, hopeful).','Support with a quotation and explain its effect.']}
+};
+function renderPackage(){
+  $('#packageArea').innerHTML = `
+  <div class="card" style="margin-bottom:20px"><h2>Student strategy guides</h2><p class="hint" style="margin:0">Teach one question type at a time. Print these as bookmarks or display them during practice.</p></div>
+  <div class="pkg">${Object.entries(STRATEGIES).map(([t,g])=>`<div class="card">
+    <h3><span class="badge t-${t}">${TYPE_LABEL[t]}</span></h3>
+    <div class="hint">${g.ms} · <span class="rtl">${g.ar}</span></div>
+    <p style="margin:.6rem 0"><b>What it asks:</b> ${g.look}</p>
+    <p style="margin:.4rem 0"><b>Command words:</b> <i>${g.cmd}</i></p>
+    <ol style="padding-inline-start:20px;margin:.4rem 0">${g.steps.map(s=>`<li>${s}</li>`).join('')}</ol></div>`).join('')}</div>
+  ${current&&current.lesson_plan?`<div class="card" style="margin-top:20px"><h2>Lesson plan — ${esc(current.title)}</h2>${lessonPlanHtml(current)}</div>`:''}
+  <div class="grid-practice" style="margin-top:20px">
+    <div class="card"><h2>Teacher quick guide</h2><ol style="padding-inline-start:20px">
+      <li><b>Upload</b> a PDF or Word file, or paste text, in any language.</li>
+      <li><b>Choose</b> the level, exam format, question types and marks.</li>
+      <li><b>Generate</b>, then review. Click any question or model answer to edit it.</li>
+      <li><b>Save</b> to the library and print the worksheet and answer key, or export to Word.</li>
+      <li><b>Assign</b> it for student practice on a class device or laptop.</li>
+      <li><b>Review analytics</b> and plan interventions for the weakest question type.</li></ol></div>
+    <div class="card"><h2>FAQ</h2>
+      <details><summary>Which file types work?</summary><p>PDF (text-based or scanned), Word .docx, older Word .doc, .txt and .rtf. Older .doc files are read in best-effort mode, so check the extracted text or re-save as .docx.</p></details>
+      <details><summary>Does it work for Arabic and Malay?</summary><p>Yes. Arabic text is shown right-to-left automatically. You can ask for questions in the passage’s language and teacher guidance in English, or any combination.</p></details>
+      <details><summary>Can AI marking be trusted?</summary><p>Treat AI marks as a first pass (tabayyun: verify before you accept). Teachers should moderate a sample, especially for summary and higher-order questions. Without an API key the app uses simple keyword matching.</p></details>
+      <details><summary>Where is student data stored?</summary><p>Only in this browser on this device. Export the CSV regularly to the project Drive. No student data is sent anywhere except the answers sent to the AI for marking.</p></details>
+      <details><summary>Why are hints locked?</summary><p>In line with Productive Failure, students write their own attempt before seeing the strategy. The analytics show how many hints each student used.</p></details>
+    </div></div>`;
+}
+
+/* =========================================================
+   SETTINGS
+   ========================================================= */
+function refreshKeyUI(){
+  $('#apiKey').value = getKey(); $('#model').value = getModel();
+  $('#keyBanner').style.display = aiReady() ? 'none' : 'flex';
+  const h = $('#hostedNote'); if (h) h.style.display = SAMPLE_FN ? 'block' : 'none';
+  if (HOSTED){ $('#bannerText').textContent = SAMPLE_FN ? '' : 'Connecting to Claude… If AI features stay unavailable, open this page on claude.ai while signed in.'; }
+}
+$('#saveKey').onclick = () => { store.set('apiKey', $('#apiKey').value.trim()); store.set('model', $('#model').value.trim()); refreshKeyUI(); $('#keyStatus').textContent='Saved ✓'; };
+$('#testKey').onclick = async () => {
+  store.set('apiKey', $('#apiKey').value.trim()); store.set('model', $('#model').value.trim()); refreshKeyUI();
+  $('#keyStatus').textContent = 'Testing…';
+  try{ const r = await callClaude('Reply with the single word: OK', 10); $('#keyStatus').textContent = '✓ Connected ('+getModel()+') — '+r.trim(); }
+  catch(e){ $('#keyStatus').textContent = '✗ '+e.message; }
+};
+$('#backupBtn').onclick = () => saveFile('GCAI_backup_'+new Date().toISOString().slice(0,10)+'.json', JSON.stringify({library:getLib(), attempts:store.get('attempts',[])}, null, 2));
+$('#resetAll').onclick = async () => { if(await uiConfirm('Erase API key, library and all student attempts on this device?')){ ['apiKey','model','library','attempts','lastName','lastClass'].forEach(k=>{ delete mem[k]; try{localStorage.removeItem('gcai_'+k);}catch(e){} }); current=null; practice=null; refreshKeyUI(); toast('All local data erased.'); } };
+$('#bannerSettings').onclick = () => showTab('settings');
+$('#generateBtn').onclick = generate;
+
+/* =========================================================
+   SAMPLE (works without an API key)
+   ========================================================= */
+const SAMPLE = {
+  title:'The Water Keepers of Kampong Lalang', language:'English', direction:'ltr', level:'Secondary 1–2', format:'GCE O-Level style',
+  passage:`Every morning before the sun cleared the coconut palms, Mak Esah walked to the old well at the edge of Kampong Lalang. She did not go to draw water; the village had piped water now. She went to check the level, dropping a weighted rope and noting the wet mark on a small exercise book she kept in her apron.
+
+The younger villagers found this amusing. "The taps work, Mak," her grandson Irfan would say, holding his phone up as proof that the modern world had arrived. Mak Esah would only smile and tap the exercise book. "Taps forget," she said. "Wells remember."
+
+That year the rains came late. By the third dry month, the water pressure in the village dropped to a trickle, and the council announced that supply would be rationed to two hours a day. Families queued with buckets. Tempers rose faster than the temperature.
+
+It was Irfan who remembered the exercise book. He found his grandmother on the verandah, turning its yellowed pages. Thirty years of numbers stared back at him, each one in her careful, slanting hand. "The well has dropped before," she said quietly, "and it has always come back — but only when we stopped wasting it."
+
+Irfan photographed every page. That night he turned the numbers into a simple graph and shared it at the village meeting. For the first time, people could see the pattern: the well fell sharply in dry years when households watered gardens at noon and washed cars with running hoses, and recovered when they did not.
+
+The changes that followed were small. Gardens were watered at dusk. Rainwater was collected in old drums. Children were given the job of checking for dripping taps. By the time the monsoon finally arrived, the well had stopped falling.
+
+Mak Esah still walks to the well each morning. Now, Irfan walks with her, and the exercise book has a second set of numbers in a newer, rounder hand.`,
+  analysis:{summary:'An elderly woman, Mak Esah, has recorded the water level of her village well for thirty years, which younger villagers find unnecessary. During a drought her grandson Irfan turns her records into a graph that reveals how wasteful habits deepen water shortages. The village adopts simple conservation habits and Irfan continues his grandmother’s record-keeping.',
+    main_idea:'Careful observation and traditional knowledge, combined with modern tools, can guide a community to use resources wisely.',
+    text_type:'Narrative (short story with an environmental message)', themes:['Intergenerational knowledge','Water conservation','Tradition and modernity','Community responsibility'],
+    tone:'Gentle, reflective and quietly hopeful', difficulty:'Moderate', suitable_for:'Secondary 1–2 (upper Primary with support)',
+    teaching_notes:'The key inference is the contrast “Taps forget, wells remember”. Pre-teach “rationed”, “verandah” and “monsoon”. The ending relies on students noticing the symbolism of the “newer, rounder hand”.'},
+  passage_keywords:[{term:'weighted rope',meaning:'a rope with something heavy tied to the end so it sinks'},{term:'rationed',meaning:'limited to a fixed amount for each person'},{term:'Tempers rose',meaning:'people became angry more easily'},{term:'yellowed pages',meaning:'old pages that have turned yellow with age'},{term:'pattern',meaning:'something that repeats in a way you can predict'},{term:'monsoon',meaning:'the rainy season'},{term:'newer, rounder hand',meaning:'different, younger handwriting (Irfan’s)'}],
+  questions:[
+    {type:'literal',question:'What did Mak Esah do at the well every morning? (Paragraph 1)',marks:2,model_answer:'She checked the water level by dropping a weighted rope into the well, and she recorded the wet mark in an exercise book.',evidence:'She went to check the level, dropping a weighted rope and noting the wet mark',keywords:['check','level','rope','exercise book'],marking_scheme:[{point:'checked the water level using a weighted rope',marks:1},{point:'recorded/noted the mark in an exercise book',marks:1}],strategy:'This is a literal question: the answer is stated directly. Go to paragraph 1 and find what she did, not what she did NOT do.',steps:['Underline “every morning” and “at the well”.','Notice the trap: she did NOT draw water.','Find the two actions: checking with a rope and noting the mark.','Write both actions in one clear sentence.'],common_errors:'Saying she drew water, or giving only one of the two actions.'},
+    {type:'inferential',question:'Why did the younger villagers find Mak Esah’s habit “amusing”?',marks:2,model_answer:'They thought it was unnecessary or old-fashioned, because the village now had piped water, so there seemed to be no need to monitor the well.',evidence:'the village had piped water now',keywords:['piped water','unnecessary','old-fashioned'],marking_scheme:[{point:'they saw the habit as pointless/old-fashioned',marks:1},{point:'because piped water / taps had replaced the well',marks:1}],strategy:'Inference: the text shows the reason but does not state it outright. Link the reaction to a clue nearby.',steps:['Find “amusing” in paragraph 2.','Look back to paragraph 1: what had changed in the village?','Connect the two: if taps work, why check a well?','State the attitude (pointless) and the reason (piped water).'],common_errors:'Only saying “because it was funny”, which repeats the question.'},
+    {type:'vocabulary',question:'What does the word “rationed” (paragraph 3) mean as used in the passage?',marks:1,model_answer:'Limited to a fixed, small amount for everyone.',evidence:'supply would be rationed to two hours a day',keywords:['limited','fixed amount'],marking_scheme:[{point:'limited / given out in fixed restricted amounts',marks:1}],strategy:'Use context clues: what follows the word tells you its meaning.',steps:['Read the full sentence.','Notice “to two hours a day”, which is a limit.','Replace “rationed” with “limited”. It still makes sense.'],common_errors:'Saying “stopped” or “cut off”. Water was still supplied, just limited.'},
+    {type:'inferential',question:'Explain what Mak Esah means when she says, “Taps forget. Wells remember.”',marks:3,model_answer:'Taps only give water in the moment and tell you nothing about how much is left, whereas the well’s level shows changes over time. Her records “remember” past droughts, so they can warn the village of what may happen.',evidence:'Taps forget," she said. "Wells remember.',keywords:['over time','records','warn','past'],marking_scheme:[{point:'taps give no information about supply / the past',marks:1},{point:'the well level shows changes over time',marks:1},{point:'her records preserve past patterns that can warn/guide the village',marks:1}],strategy:'Figurative statement: explain both halves and what the contrast suggests.',steps:['Ask what a tap shows you, and what it hides.','Ask what a well (and her book) shows you.','Explain the contrast between the present moment and history over time.','Link it to how her records help later in the story.'],common_errors:'Treating it literally (“wells have memories”) or explaining only one half.'},
+    {type:'literal',question:'What did Irfan do with his grandmother’s records? Give two actions.',marks:2,model_answer:'He photographed every page and turned the numbers into a graph, which he shared at the village meeting.',evidence:'Irfan photographed every page. That night he turned the numbers into a simple graph',keywords:['photographed','graph','meeting'],marking_scheme:[{point:'photographed the pages',marks:1},{point:'made a graph / shared it at the meeting',marks:1}],strategy:'Scan paragraph 5 for action verbs connected to Irfan.',steps:['Find Irfan’s name in paragraph 5.','Pick out the verbs: photographed, turned … into a graph, shared.','Give two separate actions.'],common_errors:'Repeating the same action twice in different words.'},
+    {type:'purpose_tone',question:'How does the writer’s tone change from paragraph 3 to the final paragraph? Support your answer with evidence.',marks:3,model_answer:'In paragraph 3 the tone is tense and anxious (“Tempers rose faster than the temperature”). By the final paragraph it is calm and hopeful, as Irfan now walks with his grandmother and continues her records.',evidence:'Tempers rose faster than the temperature.',keywords:['tense','hopeful','calm','Tempers rose'],marking_scheme:[{point:'tense/anxious tone in paragraph 3',marks:1},{point:'calm/hopeful/peaceful tone at the end',marks:1},{point:'suitable evidence quoted for either',marks:1}],strategy:'Name the tone with precise adjectives at two points, then quote evidence.',steps:['Reread paragraph 3 and pick an adjective for the mood.','Reread the last paragraph and pick another.','Choose one short quotation as evidence.','Write: “At first … , but by the end …”.'],common_errors:'Using vague words like “good” or “bad”, or giving no evidence.'},
+    {type:'purpose_tone',question:'What is the significance of “a second set of numbers in a newer, rounder hand” at the end of the story?',marks:2,model_answer:'It shows that Irfan has taken over his grandmother’s record-keeping, so her knowledge and habit will be passed on to the next generation.',evidence:'a second set of numbers in a newer, rounder hand',keywords:['Irfan','next generation','continue','passed on'],marking_scheme:[{point:'the handwriting belongs to Irfan / he now records too',marks:1},{point:'the tradition/knowledge continues to the next generation',marks:1}],strategy:'Endings often carry the message. Ask who this detail refers to and why the writer ends here.',steps:['Ask whose handwriting is “newer, rounder”.','Contrast it with Mak Esah’s “careful, slanting hand”.','Explain what it shows about the future.'],common_errors:'Stating only that someone else wrote in the book, without explaining the significance.'},
+    {type:'summary',question:'Using paragraphs 5–6, summarise in no more than 50 words how the village solved its water problem.',marks:5,model_answer:'Irfan’s graph showed that the well fell when water was wasted. Villagers then watered gardens at dusk instead of noon, collected rainwater in drums, stopped wasteful habits such as hosing cars, and children checked for dripping taps. These small changes stopped the well falling.',evidence:'Gardens were watered at dusk. Rainwater was collected in old drums.',keywords:['graph','dusk','rainwater','dripping taps','wasting'],marking_scheme:[{point:'graph revealed link between waste and falling well',marks:1},{point:'watered gardens at dusk',marks:1},{point:'collected rainwater',marks:1},{point:'children checked for dripping taps',marks:1},{point:'fluent, within word limit, own words',marks:1}],strategy:'Summary: select only relevant points from the stated paragraphs, in your own words, within the limit.',steps:['Mark the boundaries: paragraphs 5–6 only.','List each action that saved water.','Cut examples and repetition.','Join points into fluent sentences and count your words.'],common_errors:'Retelling the whole story or copying long chunks of text.'}
+  ],
+  lesson_plan:{duration:'60 minutes',objectives:['Retrieve explicit information accurately','Make and justify inferences using textual evidence','Identify how tone shifts across a narrative','Write a concise summary within a word limit'],
+    activities:[{stage:'Hook',minutes:5,description:'Show a photo of a dry well and ask: “How would you know a water shortage is coming?”'},{stage:'Productive struggle',minutes:10,description:'Pairs attempt Q4 (“Taps forget, wells remember”) before any teaching. Collect varied interpretations.'},{stage:'Consolidation',minutes:10,description:'Compare student ideas and model the inference strategy using the clue → reasoning → evidence frame.'},{stage:'Independent practice',minutes:20,description:'Students complete the remaining questions in GCAI practice mode, unlocking hints after attempting.'},{stage:'Summary workshop',minutes:10,description:'Model point-listing for Q8, then students redraft within the word limit.'},{stage:'Reflection',minutes:5,description:'Link to amanah: how are we trustees of shared resources like water?'}],
+    differentiation:'Support: provide sentence starters and paragraph references for each question. Stretch: ask students to write a new paragraph from Irfan’s point of view in 20 years.',
+    exit_ticket:'In one sentence: what is one thing the village learned, and which line in the story proves it?'}
+};
+function loadDemo(){
+  $('#titleInput').value = SAMPLE.title; $('#passageInput').value = SAMPLE.passage; updateWordCount();
+  const existing = getLib().find(s=>s.title===SAMPLE.title && s.sample);
+  current = existing || Object.assign(normaliseSet(SAMPLE, {passage:SAMPLE.passage, title:SAMPLE.title, level:SAMPLE.level, format:SAMPLE.format}), {sample:true});
+  saveSet(current); renderOutput(); toast('Sample loaded and saved to the library.');
+}
+$('#demoBtn').onclick = loadDemo; $('#bannerDemo').onclick = loadDemo;
+
+/* init */
+refreshKeyUI(); updateWordCount();
+</script>
+</body>
+</html>
